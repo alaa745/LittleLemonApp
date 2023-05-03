@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,12 +28,13 @@ import com.alaa.metaapp.dishdetails.Dish
 import com.alaa.metaapp.ui.theme.LittleLemonColor
 import com.alaa.metaapp.viewmodel.CartViewModel
 import com.alaa.metaapp.viewmodel.CartViewModelFactory
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartDetails(navController: NavHostController, id: Int) {
     val scaffoldState = rememberScaffoldState()
-    val dish = requireNotNull(DishRepository.getDish(id))
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val cartViewModel: CartViewModel = viewModel(
         factory = CartViewModelFactory(context.applicationContext as Application)
@@ -110,7 +112,11 @@ fun CartDetails(navController: NavHostController, id: Int) {
                             .fillMaxWidth()
                             .padding(8.dp)) {
                         Button(
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                                coroutineScope.launch {
+                                    bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                                }
+                            },
                             shape = RoundedCornerShape(10.dp),
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.yellow)
