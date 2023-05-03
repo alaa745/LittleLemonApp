@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val id =
                             requireNotNull(it.arguments?.getInt(com.alaa.metaapp.destination.DishDetails.argDishId))
-                        CartDetails(id)
+                        CartDetails(navController , id)
                     }
                 }
             }

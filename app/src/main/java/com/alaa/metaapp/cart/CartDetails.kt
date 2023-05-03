@@ -30,7 +30,7 @@ import com.alaa.metaapp.viewmodel.CartViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartDetails(id: Int) {
+fun CartDetails(navController: NavHostController, id: Int) {
     val scaffoldState = rememberScaffoldState()
     val dish = requireNotNull(DishRepository.getDish(id))
     val context = LocalContext.current
@@ -57,6 +57,7 @@ fun CartDetails(id: Int) {
                 navigationIcon = {
                     IconButton(
                         onClick = {
+                            navController.popBackStack()
                         }
                     ) {
                         Image(
