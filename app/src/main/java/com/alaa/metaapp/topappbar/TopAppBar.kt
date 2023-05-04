@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 fun TopAppBar(
     drawerState: DrawerState? = null,
     scope: CoroutineScope? = null,
-    counter: Int = 0,
+    counter: Int? = 0,
     id: Int = 0,
     navController: NavHostController? = null
 //    color: Color? =
@@ -58,7 +58,9 @@ fun TopAppBar(
             navController?.navigate(com.alaa.metaapp.destination.CartDetails.route + "/${id}")
         }) {
             BadgedBox(badge = {
-                BadgeNumber(counter)
+                if (counter != null) {
+                    BadgeNumber(counter)
+                }
             }) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_cart),

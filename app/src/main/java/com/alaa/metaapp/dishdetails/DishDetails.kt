@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 //import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,6 +52,7 @@ fun DishDetails(navController: NavHostController, id: Int) {
 
 //    val dishes = cartViewModel.dishes.observeAsState(listOf()).value
 
+    val count = cartViewModel.dishesSize.observeAsState().value
     val dish = requireNotNull(DishRepository.getDish(id))
 //    val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -90,13 +92,13 @@ fun DishDetails(navController: NavHostController, id: Int) {
                 androidx.compose.material.TopAppBar(
                     backgroundColor = Color.White
                 ) {
-                    TopAppBar(
-                        drawerState = drawerState,
-                        scope = scope,
-                        counter = cartItemCount2,
-                        navController = navController,
-                        id = dish.id
-                    )
+                        TopAppBar(
+                            drawerState = drawerState,
+                            scope = scope,
+                            counter = count,
+                            navController = navController,
+                            id = dish.id
+                        )
                 }
             }
         ) { padding ->
@@ -194,7 +196,7 @@ fun AddCartBtn(
         Button(
             onClick = {
                 cartViewModel.addToCart(dish)
-                onAddToCart(cartItemCount)
+//                onAddToCart(cartItemCount)
             },
             Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4CE14)),
