@@ -1,6 +1,7 @@
 package com.alaa.metaapp
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.alaa.metaapp.cart.CartItem
 import com.alaa.metaapp.dishdetails.Dish
 import com.alaa.metaapp.repository.DishRepository
 import com.alaa.metaapp.ui.theme.LittleLemonColor
@@ -53,6 +55,7 @@ fun DishDetails(navController: NavHostController, id: Int) {
 //    val dishes = cartViewModel.dishes.observeAsState(listOf()).value
 
     val count = cartViewModel.dishesSize.observeAsState().value
+
     val dish = requireNotNull(DishRepository.getDish(id))
 //    val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -103,7 +106,7 @@ fun DishDetails(navController: NavHostController, id: Int) {
             }
         ) { padding ->
             Modifier.padding(padding)
-            DishDetailsContent(cartViewModel,navController, dish, cartItemCount , { count -> cartItemCount = count }) { count ->
+            DishDetailsContent(cartViewModel , navController, dish, cartItemCount , { count -> cartItemCount = count }) { count ->
                 cartItemCount2 = count
             }
         }
@@ -177,7 +180,7 @@ fun DishDetailsContent(
                 )
                 Text(text = dish.description , style = MaterialTheme.typography.bodyLarge)
                 Counter(dish , incrementCounter)
-                AddCartBtn(cartViewModel , navController , dish , cartItemCount , onAddToCart)
+                AddCartBtn(cartViewModel , dish , cartItemCount)
             }
         }
     }
@@ -186,17 +189,24 @@ fun DishDetailsContent(
 @Composable
 fun AddCartBtn(
     cartViewModel: CartViewModel,
-    navController: NavHostController,
     dish: Dish,
     cartItemCount: Int,
-    onAddToCart: (Int) -> Unit
 ){
+    val exist = cartViewModel.exist.observeAsState().value
+    Log.d("exist1" , "exist: ${exist}")
     Row(modifier = Modifier
         .padding(end = 8.dp)) {
         Button(
             onClick = {
-                cartViewModel.addToCart(dish)
-//                onAddToCart(cartItemCount)
+                val cartItem = CartItem(
+                    dishId = dish.id,
+                    dishName = dish.name,
+                    dishDescription = dish.description,
+                    dishPrice = dish.price,
+                    dishImageResource = dish.imageResource,
+                    dishQuantity = cartItemCount
+                )
+                cartViewModel.isExist(cartItem)
             },
             Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4CE14)),
@@ -208,7 +218,42 @@ fun AddCartBtn(
             )
         }
     }
+
+    // Observe the exist value and call checkExist when it is updated
+    // LaunchedEffect triggers a recomposition of composable whenever the exist value changes
+//    LaunchedEffect(exist) {
+//        if (exist != null) {
+//            val cartItem = CartItem(
+//                dishId = dish.id,
+//                dishName = dish.name,
+//                dishDescription = dish.description,
+//                dishPrice = dish.price,
+//                dishImageResource = dish.imageResource,
+//                dishQuantity = cartItemCount
+//            )
+//            checkExist(exist, cartItem, dish, cartViewModel, cartItemCount)
+//        }
+//    }
 }
+
+
+//fun checkExist(
+//    exist: Boolean?,
+//    cartItem: CartItem,
+//    dish: Dish,
+//    cartViewModel: CartViewModel,
+//    cartItemCount: Int
+//){
+//    if (exist == false) {
+//        cartViewModel.addToCart(cartItem)
+//        Log.d("exist" , "exist: ${exist}")
+//    }
+//    else{
+//        cartViewModel.updateCart(cartItem)
+//        Log.d("exist" , "exist: ${exist}")
+//
+//    }
+//}
 
 @Composable
 fun Counter(dish: Dish,incrementCounter: (Int) -> Unit) {
@@ -252,11 +297,4 @@ fun Counter(dish: Dish,incrementCounter: (Int) -> Unit) {
             )
         }
     }
-//    AddCartBtn(dish = dish)
 }
-//
-//@Preview
-//@Composable
-//fun DishDetailsPreview() {
-//    DishDetails(id = 1)
-//}

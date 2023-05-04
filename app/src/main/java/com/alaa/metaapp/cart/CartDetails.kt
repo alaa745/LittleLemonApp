@@ -22,9 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.alaa.metaapp.repository.DishRepository
 import com.alaa.metaapp.R
-import com.alaa.metaapp.dishdetails.Dish
 import com.alaa.metaapp.ui.theme.LittleLemonColor
 import com.alaa.metaapp.viewmodel.CartViewModel
 import com.alaa.metaapp.viewmodel.CartViewModelFactory
@@ -40,7 +38,7 @@ fun CartDetails(navController: NavHostController, id: Int) {
         factory = CartViewModelFactory(context.applicationContext as Application)
     )
 
-    val dishes = cartViewModel.dishes.observeAsState(listOf()).value
+    val cartItems = cartViewModel.cartItems.observeAsState(listOf()).value
 
     androidx.compose.material.Scaffold(
         scaffoldState = scaffoldState,
@@ -130,13 +128,13 @@ fun CartDetails(navController: NavHostController, id: Int) {
                 }
             }
         ){
-            AllContents(dishes)
+            AllContents(cartItems)
         }
     }
 }
 
 @Composable
-fun AllContents(dishes: List<Dish>) {
+fun AllContents(cartItems: List<CartItem>) {
     LazyColumn(
         Modifier
             .fillMaxHeight()
@@ -144,8 +142,8 @@ fun AllContents(dishes: List<Dish>) {
 //                .background(Color.Green),
 //            verticalArrangement = Arrangement.SpaceBetween
     ) {
-        items(dishes) {dish ->
-            CartContents(dish)
+        items(cartItems) { cartItem ->
+            CartContents(cartItem)
         }
         item {
             PaymentSummary()
@@ -155,7 +153,7 @@ fun AllContents(dishes: List<Dish>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartContents(dish: Dish) {
+fun CartContents(cartItem: CartItem) {
     Column {
         Card(
             onClick = { /*TODO*/ },
@@ -170,21 +168,21 @@ fun CartContents(dish: Dish) {
                 Column(
 //                    Modifier.padding(8.dp)
                 ) {
-                    Text(text = dish.name, style = MaterialTheme.typography.displayMedium)
+                    Text(text = cartItem.dishName, style = MaterialTheme.typography.displayMedium)
                     Text(
-                        text = dish.description,
+                        text = cartItem.dishDescription,
                         Modifier.fillMaxWidth(.75f),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "${dish.price}",
+                        text = "${cartItem.dishPrice}",
                         Modifier.padding(top = 8.dp),
                         style = MaterialTheme.typography.bodySmall
                     )
 
                 }
                 Image(
-                    painter = painterResource(id = dish.imageResource),
+                    painter = painterResource(id = cartItem.dishImageResource),
                     contentDescription = "",
                     modifier = Modifier.clip(shape = RoundedCornerShape(10.dp))
                 )
