@@ -1,13 +1,24 @@
 package com.alaa.metaapp.repository
 
+import android.util.Log
+import com.alaa.metaapp.cart.CartItem
 import com.alaa.metaapp.database.DatabaseDao
-import com.alaa.metaapp.dishdetails.Dish
 
 class DishDataRepository(private val databaseDao: DatabaseDao) {
-    val dishes = databaseDao.getAll()
+    val cartItems = databaseDao.getAll()
+    var exist: Boolean? = false
 
-    suspend fun addToCart(dish: Dish){
-        databaseDao.insert(dish)
+    suspend fun addToCart(cartItem: CartItem){
+        databaseDao.insert(cartItem)
+    }
+
+    suspend fun updateCart(cartItem: CartItem){
+        databaseDao.update(cartItem)
+    }
+
+    suspend fun isExist(cartItem: CartItem): Boolean?{
+        exist = databaseDao.isExist(cartItem.dishId)
+        return exist
     }
 
 }
