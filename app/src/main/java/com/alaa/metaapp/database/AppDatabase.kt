@@ -5,11 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.alaa.metaapp.cart.CartItem
-import com.alaa.metaapp.dishdetails.Dish
 
 @Database(entities = [CartItem::class], version = 3, exportSchema = true)
 abstract class AppDatabase: RoomDatabase(){
-    abstract fun databaseDao(): DatabaseDao
+    abstract fun databaseDao(): CartDao
 
     companion object {
 
