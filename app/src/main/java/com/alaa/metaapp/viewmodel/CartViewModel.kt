@@ -2,12 +2,15 @@ package com.alaa.metaapp.viewmodel
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.alaa.metaapp.cart.CartItem
 import com.alaa.metaapp.database.AppDatabase
-import com.alaa.metaapp.dishdetails.Dish
 import com.alaa.metaapp.repository.DishDataRepository
-import com.alaa.metaapp.repository.DishRepository.dishes
 import kotlinx.coroutines.launch
 
 class CartViewModel(application: Application): AndroidViewModel(application) {
@@ -16,6 +19,9 @@ class CartViewModel(application: Application): AndroidViewModel(application) {
 //    var exist: LiveData<Boolean>?
     private val _exist = MutableLiveData<Boolean>(false)
     val exist: LiveData<Boolean> = _exist
+
+    private val _quantity = MutableLiveData<Int>(0)
+    val quantity: LiveData<Int> = _quantity
 
     private val _dishesSize = MutableLiveData<Int>()
     val dishesSize: LiveData<Int> = _dishesSize
@@ -38,7 +44,12 @@ class CartViewModel(application: Application): AndroidViewModel(application) {
 
     fun updateCart(cartItem: CartItem){
         viewModelScope.launch {
-            repository.updateCart(cartItem)
+            val databaseQuantity = repository.getQuantity(cartItem)
+            val currentQuant = cartItem.dishQuantity
+            _quantity.value = databaseQuantity
+            Log.d("quant2" , "quant2: ${_quantity.value}")
+
+            repository.updateCart2(cartItem.dishId , databaseQuantity!!+currentQuant)
         }
     }
 
@@ -48,17 +59,10 @@ class CartViewModel(application: Application): AndroidViewModel(application) {
             _exist.value = bool
             if (_exist.value == false) {
                 addToCart(cartItem)
-                Log.d("exist" , "exist: ${_exist.value}")
             }
             else{
-
                 updateCart(cartItem)
-                Log.d("exist" , "exist: ${_exist.value}")
-
             }
-            Log.d("bool" , "bool ${bool}")
-            Log.d("booll" , "booll ${_exist.value}")
-
         }
     }
 }
