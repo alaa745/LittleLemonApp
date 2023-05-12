@@ -1,9 +1,16 @@
 package com.alaa.metaapp.cart
 
-import android.app.Application
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
 //import androidx.compose.foundation.layout.BoxScopeInstance.align
+import android.app.Application
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,10 +19,32 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.*
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -252,9 +281,7 @@ fun CartContents(cartItem: CartItem) {
 
 @Composable
 fun PaymentSummary(cartItems: List<CartItem>){
-    var basketTotal = remember {
-        mutableStateOf(0.0)
-    }
+    var basketTotal = 0.0
     var basketQuantity = 0
     var total = 0.0
     Card(
@@ -268,9 +295,10 @@ fun PaymentSummary(cartItems: List<CartItem>){
                 .fillMaxWidth(),
         ) {
             for (cartItem in cartItems){
-                basketTotal.value = cartItem.dishPrice * cartItem.dishQuantity
+                basketTotal = cartItem.dishPrice * cartItem.dishQuantity
                 basketQuantity = cartItem.dishQuantity
-                total = basketTotal.value
+                total += basketTotal
+                Log.d("basket" , "total: ${total}")
             }
             Text(text = "Payment summary", Modifier.padding(8.dp) ,style = MaterialTheme.typography.displayMedium)
             Row(Modifier.fillMaxWidth()) {
@@ -278,7 +306,7 @@ fun PaymentSummary(cartItems: List<CartItem>){
                     Modifier
                         .padding(8.dp)
                         .fillMaxWidth(.80f) ,style = MaterialTheme.typography.bodyMedium)
-                Text(text = "EGP ${basketTotal.value}" ,style = MaterialTheme.typography.bodyMedium)
+                Text(text = "EGP ${total}" ,style = MaterialTheme.typography.bodyMedium)
 
             }
             Row(Modifier.fillMaxWidth()) {
